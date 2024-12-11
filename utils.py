@@ -20,47 +20,25 @@ def get_participants():
     
     return participantsXmail
 
-# def get_participants():
-#     """Retourne une liste de participants prédéfinis avec seulement les e-mails à remplir."""
-#     predefined_names = ["Lucie", "Amandine", "Océane", "Manon", "Alexandra", "Florance", "Raphaële"]
-#     participants = []
-
-#     st.write("⚠️ Entrez les emails des participants suivants :")
-#     for i, name in enumerate(predefined_names):
-#         col1, col2 = st.columns(2)
-#         with col1:
-#             st.text_input(f"Nom du participant {i+1}", value=name, key=f"name_{i}", disabled=True)
-#         with col2:
-#             email = st.text_input(f"Email du participant {i+1}", key=f"email_{i}")
-#         participants.append((name, email))
-            
-#     # Vérifier si tous les emails sont remplis
-#     missing_emails = [name for name, email in participants if not email]
-#     if missing_emails:
-#         st.error(f"Les emails suivants sont manquants : {', '.join(missing_emails)}")
-
-#     num_part = len(predefined_names)
-#     return participants,num_part
-            
 def generate_secret_santa():
     """Retourne une liste de paires hard-coded pour le Secret Santa."""
-    group1 = ["Lucie", "Amandine", "Océane"]
-    group2 = ["Florance", "Raphaële", "Alexandra", "Manon"]
+    group = st.secrets["smtp"]['group']
+    groups = st.secrets["smtp"]['groups']
 
     # Maintenir la paire fixe
     fixed_pairs = [("Manon", "Alexandra")]
 
     # Générer les paires aléatoires pour group1
-    givers1 = group1[:]
-    receivers1 = group1[:]
+    givers1 = group[:]
+    receivers1 = group[:]
     random.shuffle(receivers1)
     while any(giver == receiver for giver, receiver in zip(givers1, receivers1)):
         random.shuffle(receivers1)
     pairs1 = list(zip(givers1, receivers1))
 
     # Générer les paires aléatoires pour group2 (sauf Manon et Alexandra)
-    givers2 = [g for g in group2 if g != "Manon"]
-    receivers2 = [r for r in group2 if r != "Alexandra"]
+    givers2 = [g for g in groups if g != "Manon"]
+    receivers2 = [r for r in groups if r != "Alexandra"]
     random.shuffle(receivers2)
     while any(giver == receiver for giver, receiver in zip(givers2, receivers2)):
         random.shuffle(receivers2)
@@ -68,16 +46,6 @@ def generate_secret_santa():
 
     # Combiner toutes les paires
     return pairs1 + pairs2 + fixed_pairs
-    # return [
-    #     #("Donne", "recoit")
-    #     ("Lucie", "Amandine"),
-    #     ("Amandine", "Océane"),
-    #     ("Océane", "Lucie"),
-    #     ("Manon", "Alexandra"),
-    #     ("Alexandra", "Raphaële"),
-    #     ("Florance", "Manon"),
-    #     ("Raphaële", "Florance")
-    # ]
     
 def send_recap(pairs):
     smtp_config = email_config()
@@ -123,22 +91,3 @@ def send_email(giver, receiver, giver_email):
             st.write(f"Email sent successfully to {giver}!")
         except Exception as e:
             st.error(f'Mail error sending to {giver}!')
-            
-            
-    #     try:
-    #     # Connect to the Gmail SMTP server (for example)
-    #     server = smtplib.SMTP("smtp.gmail.com", 587)
-    #     server.starttls()  # Secure connection using TLS
-
-    #     # Log in to the email account
-    #     server.login(sender_email, password)
-
-    #     # Send the email
-    #     server.sendmail(sender_email, receiver_email, message.as_string())
-    #     print("Email sent successfully!")
-        
-    # except Exception as e:
-    #     print(f"Error: {e}")
-    # finally:
-    #     # Quit the server connection
-    #     server.quit()

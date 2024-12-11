@@ -1,9 +1,6 @@
 import streamlit as st
 import random
 import smtplib
-from email.mime.text import MIMEText
-
-from smtp import email_config
 from utils import generate_secret_santa, get_participants, send_email, send_recap
 
 custom_css = """
@@ -29,8 +26,6 @@ custom_css = """
 
 def main():
     # Titre de l'application
-    smtp_config = email_config()
-
     st.set_page_config(page_title="Secret Santa", page_icon = "🎅🏻")
     st.markdown(custom_css, unsafe_allow_html=True)
     st.title('🎅🏻 Secret Santa Organizer🎄')
@@ -48,7 +43,7 @@ def main():
     st.header("Ajouter les participants")
     
     """Retourne une liste de participants prédéfinis avec seulement les e-mails à remplir."""
-    predefined_names = ["Lucie", "Amandine", "Océane", "Manon", "Alexandra", "Florance", "Raphaële"]
+    predefined_names = st.secrets["smtp"]['participants']
     participants = []
 
     st.write("⚠️ Entrez les emails des participants suivants :")
